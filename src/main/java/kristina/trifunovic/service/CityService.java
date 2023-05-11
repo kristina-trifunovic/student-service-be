@@ -37,7 +37,7 @@ public class CityService implements Service<CityEntity, Long> {
     @Override
     public CityEntity update(CityEntity city) throws UnknownEntityException {
         Optional<CityEntity> existingCity = cityRepository.findById(city.getPostalCode());
-        if (existingCity.isEmpty()) {
+        if (!existingCity.isPresent()) {
             throw new UnknownEntityException("City does not exist", city);
         }
         return cityRepository.save(city);

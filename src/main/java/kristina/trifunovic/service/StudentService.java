@@ -44,7 +44,7 @@ public class StudentService implements Service<StudentEntity, String> {
     @Override
     public StudentEntity update(StudentEntity student) throws UnknownEntityException {
         Optional<StudentEntity> existingStudent = studentRepository.findById(student.getUsername());
-        if (existingStudent.isEmpty()) {
+        if (!existingStudent.isPresent()) {
             throw new UnknownEntityException("Student does not exist", student);
         }
         student.setPassword(passwordEncoder.encode(student.getPassword()));
@@ -83,7 +83,7 @@ public class StudentService implements Service<StudentEntity, String> {
 
 //    public List<StudentEntity> findStudentsByFilter(String firstName, String lastName, String email, String city) throws NotFoundException {
 //        List<StudentEntity> filteredStudents = studentRepository.findStudentsByFilter(firstName, lastName, email, city);
-//        if (filteredStudents.isEmpty()) throw new NotFoundException("Not found any student with criteria");
+//        if (!filteredStudents.isPresent()) throw new NotFoundException("Not found any student with criteria");
 //        else return filteredStudents;
 //    }
 

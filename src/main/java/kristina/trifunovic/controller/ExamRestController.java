@@ -45,7 +45,7 @@ public class ExamRestController {
                                                          @Valid @PathVariable Integer examPeriodId) {
         ExamEntityId id = new ExamEntityId(professorUsername, subjectId, examPeriodId);
         Optional<ExamEntity> examFromDb = examService.findById(id);
-        if (examFromDb.isEmpty()) {
+        if (!examFromDb.isPresent()) {
             return ResponseEntity.badRequest().body("Exam not found");
         }
         return ResponseEntity.ok().body(examFromDb.get());

@@ -41,7 +41,7 @@ public class ProfessorService implements Service<ProfessorEntity, String> {
     @Override
     public ProfessorEntity update(ProfessorEntity professor) throws UnknownEntityException {
         Optional<ProfessorEntity> existingProfessor = professorRepository.findById(professor.getUsername());
-        if (existingProfessor.isEmpty()) {
+        if (!existingProfessor.isPresent()) {
             throw new UnknownEntityException("Professor does not exist", professor);
         }
         professor.setPassword(passwordEncoder.encode(professor.getPassword()));

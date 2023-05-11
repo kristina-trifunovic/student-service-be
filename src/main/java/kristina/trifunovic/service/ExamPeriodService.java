@@ -37,7 +37,7 @@ public class ExamPeriodService implements Service<ExamPeriodEntity, Integer> {
     @Override
     public ExamPeriodEntity update(ExamPeriodEntity examPeriod) throws UnknownEntityException {
         Optional<ExamPeriodEntity> existingExamPeriod = examPeriodRepository.findById(examPeriod.getId());
-        if (existingExamPeriod.isEmpty()) {
+        if (!existingExamPeriod.isPresent()) {
             throw new UnknownEntityException("Exam period does not exist", examPeriod);
         }
         return examPeriodRepository.save(examPeriod);
