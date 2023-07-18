@@ -2,11 +2,13 @@ package kristina.trifunovic.controller;
 
 import kristina.trifunovic.entity.ExamEntity;
 import kristina.trifunovic.entity.StudentEntity;
+import kristina.trifunovic.entity.StudentTakesExamEntity;
 import kristina.trifunovic.exception.EntityExistsException;
 import kristina.trifunovic.exception.UnknownEntityException;
 import kristina.trifunovic.id.entity.ExamEntityId;
 import kristina.trifunovic.service.ExamService;
 import kristina.trifunovic.service.StudentService;
+import kristina.trifunovic.service.StudentTakesExamService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,10 +25,12 @@ import java.util.Set;
 public class ExamRestController {
     private final ExamService examService;
     private final StudentService studentService;
+    private final StudentTakesExamService studentTakesExamService;
 
-    public ExamRestController(ExamService examService, StudentService studentService) {
+    public ExamRestController(ExamService examService, StudentService studentService, StudentTakesExamService studentTakesExamService) {
         this.examService = examService;
         this.studentService = studentService;
+        this.studentTakesExamService = studentTakesExamService;
     }
 
     @PostMapping()
@@ -56,6 +60,11 @@ public class ExamRestController {
         return examService.findAll();
     }
 
+    @GetMapping("{professorUsername}")
+    public List<ExamEntity> findProfessorsExams(@PathVariable String professorUsername) {
+        return examService.findProfessorsExams(professorUsername);
+    }
+
     @GetMapping("page")
     public ResponseEntity<Page<ExamEntity>> findPage(@RequestParam(defaultValue = "0") Integer pageNo,
                                                           @RequestParam(defaultValue = "5") Integer pageSize,
@@ -77,19 +86,13 @@ public class ExamRestController {
 
     @PutMapping("/{username}/apply")
     public ResponseEntity<Object> addExamsToStudent(@PathVariable String username,
-                                                    @RequestBody Set<ExamEntity> exams) {
+                                                    @RequestBody List<ExamEntity> exams) {
         Optional<StudentEntity> studentFromDb = studentService.findById(username);
         if (studentFromDb.isPresent()) {
-            for (ExamEntity exam: exams) {
-                Optional<ExamEntity> examFromDb = examService.findById(exam.getId());
-                if (examFromDb.isPresent()) {
-                    studentFromDb.get().addExam(examFromDb.get());
-                } else return ResponseEntity.badRequest().body("Exam not found");
-            }
             try {
-                StudentEntity updatedStudent = studentService.update(studentFromDb.get());
-                return ResponseEntity.ok().body(updatedStudent);
-            } catch (UnknownEntityException e) {
+                List<StudentTakesExamEntity> list = studentTakesExamService.applyExams(studentFromDb.get(), exams);
+                return ResponseEntity.ok().body(list);
+            } catch (Exception e) {
                 return ResponseEntity.badRequest().body(e.getMessage());
             }
         } else return ResponseEntity.badRequest().body("Student not found");

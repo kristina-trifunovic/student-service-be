@@ -6,8 +6,6 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 
@@ -17,9 +15,8 @@ public class ExamEntity implements kristina.trifunovic.entity.Entity {
     @EmbeddedId
     private ExamEntityId id;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "exams")
-    private Set<StudentEntity> students;
+//    @ManyToMany(mappedBy = "exams")
+//    private Set<StudentEntity> students;
 
     @ManyToOne
     @MapsId("professorUsername")
@@ -46,20 +43,28 @@ public class ExamEntity implements kristina.trifunovic.entity.Entity {
     @NotNull(message = "Exam date is required")
     private Date examDate;
 
-    @Column
-    @Min(value = 5, message = "Grade should be minimum 5")
-    @Max(value = 10, message = "Grade should be maximum 10")
-    private Integer grade;
+    @OneToMany(
+            mappedBy = "exam",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonIgnore
+    private List<StudentTakesExamEntity> students = new ArrayList<>();
+
+//    @Column
+//    @Min(value = 5, message = "Grade should be minimum 5")
+//    @Max(value = 10, message = "Grade should be maximum 10")
+//    private Integer grade;
 
     public ExamEntity() { }
 
-    public ExamEntity(ExamEntityId id, ProfessorEntity professor, SubjectEntity subject, ExamPeriodEntity examPeriod, Date examDate, Integer grade) {
+    public ExamEntity(ExamEntityId id, ProfessorEntity professor, SubjectEntity subject, ExamPeriodEntity examPeriod, Date examDate) {
         this.id = id;
         this.professor = professor;
         this.subject = subject;
         this.examPeriod = examPeriod;
         this.examDate = examDate;
-        this.grade = grade;
+//        this.grade = grade;
     }
 
     public ExamEntityId getId() {
@@ -102,19 +107,19 @@ public class ExamEntity implements kristina.trifunovic.entity.Entity {
         this.examDate = examDate;
     }
 
-    public Integer getGrade() {
-        return grade;
-    }
+//    public Integer getGrade() {
+//        return grade;
+//    }
+//
+//    public void setGrade(Integer grade) {
+//        this.grade = grade;
+//    }
 
-    public void setGrade(Integer grade) {
-        this.grade = grade;
-    }
-
-    public void setStudents(Set<StudentEntity> students) {
+    public void setStudents(List<StudentTakesExamEntity> students) {
         this.students = students;
     }
 
-    public Set<StudentEntity> getStudents() {
+    public List<StudentTakesExamEntity> getStudents() {
         return students;
     }
 
@@ -123,12 +128,12 @@ public class ExamEntity implements kristina.trifunovic.entity.Entity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ExamEntity that = (ExamEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(professor, that.professor) && Objects.equals(subject, that.subject) && Objects.equals(examPeriod, that.examPeriod) && Objects.equals(examDate, that.examDate) && Objects.equals(grade, that.grade);
+        return Objects.equals(id, that.id) && Objects.equals(professor, that.professor) && Objects.equals(subject, that.subject) && Objects.equals(examPeriod, that.examPeriod) && Objects.equals(examDate, that.examDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, professor, subject, examPeriod, examDate, grade);
+        return Objects.hash(id, professor, subject, examPeriod, examDate);
     }
 
     @Override
@@ -139,7 +144,7 @@ public class ExamEntity implements kristina.trifunovic.entity.Entity {
                 ", subject=" + subject +
                 ", examPeriod=" + examPeriod +
                 ", examDate=" + examDate +
-                ", grade=" + grade +
+//                ", grade=" + grade +
                 '}';
     }
 }

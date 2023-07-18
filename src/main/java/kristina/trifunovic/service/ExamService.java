@@ -1,6 +1,8 @@
 package kristina.trifunovic.service;
 
 import kristina.trifunovic.entity.ExamEntity;
+import kristina.trifunovic.entity.StudentEntity;
+import kristina.trifunovic.entity.StudentTakesExamEntity;
 import kristina.trifunovic.exception.EntityExistsException;
 import kristina.trifunovic.exception.UnknownEntityException;
 import kristina.trifunovic.id.entity.ExamEntityId;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +29,8 @@ public class ExamService implements kristina.trifunovic.service.Service<ExamEnti
     public List<ExamEntity> findAll() {
         return examRepository.findAll();
     }
+
+    public List<ExamEntity> findProfessorsExams(String professorUsername) { return examRepository.findProfessorsExams(professorUsername); }
 
     @Override
     public ExamEntity save(ExamEntity exam) throws EntityExistsException {

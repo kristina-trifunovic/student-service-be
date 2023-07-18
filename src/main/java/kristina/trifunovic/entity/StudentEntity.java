@@ -1,10 +1,12 @@
 package kristina.trifunovic.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import kristina.trifunovic.entity.constraints.IndexEntity;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -25,20 +27,29 @@ public class StudentEntity extends UserEntity {
 	@Max(value = 9, message = "Current year of study can not be more than 9")
 	private Integer currentYearOfStudy;
 
-//	@JsonManagedReference
-	@ManyToMany
-	@JoinTable(
-			name = "student_takes_exams",
-			joinColumns = @JoinColumn(name = "student", referencedColumnName = "username"),
-			foreignKey = @ForeignKey(name = "FK_StudentTakesExam_Student"),
-			inverseJoinColumns = {
-					@JoinColumn(name = "professor", referencedColumnName = "professor", foreignKey = @ForeignKey(name = "FK_StudentTakesExam_Professor")),
-					@JoinColumn(name = "subject", referencedColumnName = "subject", foreignKey = @ForeignKey(name = "FK_StudentTakesExam_Subject")),
-					@JoinColumn(name = "exam_period", referencedColumnName = "exam_period", foreignKey = @ForeignKey(name = "FK_StudentTakesExam_ExamPeriod"))
-			}
+//	@JsonIgnore
+//	@ManyToMany
+//	@JoinTable(
+//
+//			name = "student_takes_exams",
+//			joinColumns = @JoinColumn(name = "student", referencedColumnName = "username"),
+//			foreignKey = @ForeignKey(name = "FK_StudentTakesExam_Student"),
+//			inverseJoinColumns = {
+//					@JoinColumn(name = "professor", referencedColumnName = "professor", foreignKey = @ForeignKey(name = "FK_StudentTakesExam_Professor")),
+//					@JoinColumn(name = "subject", referencedColumnName = "subject", foreignKey = @ForeignKey(name = "FK_StudentTakesExam_Subject")),
+//					@JoinColumn(name = "exam_period", referencedColumnName = "exam_period", foreignKey = @ForeignKey(name = "FK_StudentTakesExam_ExamPeriod"))
+//			}
+//	)
+//	private Set<ExamEntity> exams;
+	@JsonIgnore
+	@OneToMany(
+			mappedBy = "student",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true
 	)
-	private Set<ExamEntity> exams;
-	
+	private List<StudentTakesExamEntity> exams = new ArrayList<>();
+
+
 	public StudentEntity() {
 	}
 
@@ -133,17 +144,34 @@ public class StudentEntity extends UserEntity {
 	public void setCurrentYearOfStudy(Integer currentYearOfStudy) {
 		this.currentYearOfStudy = currentYearOfStudy;
 	}
-	
-	public void addExam(ExamEntity exam) {
-		exams.add(exam);
+
+	public List<StudentTakesExamEntity> getExams() {
+		return exams;
 	}
 
-	public void setExams(Set<ExamEntity> exams) {
+	public void setExams(List<StudentTakesExamEntity> exams) {
 		this.exams = exams;
 	}
 
-	public Set<ExamEntity> getExams() {
-		return exams;
+	public void addExam(ExamEntity exam) {
+		StudentTakesExamEntity studentTakesExam = new StudentTakesExamEntity(this, exam);
+		exams.add(studentTakesExam);
+		exam.getStudents().add(studentTakesExam);
+	}
+
+	public void removeExam(ExamEntity exam) {
+		for (Iterator<StudentTakesExamEntity> iterator = exams.iterator();
+			 iterator.hasNext(); ) {
+			StudentTakesExamEntity studentTakesExam = iterator.next();
+
+			if (studentTakesExam.getStudent().equals(this) &&
+					studentTakesExam.getExam().equals(exam)) {
+				iterator.remove();
+				studentTakesExam.getExam().getStudents().remove(studentTakesExam);
+				studentTakesExam.setStudent(null);
+				studentTakesExam.setExam(null);
+			}
+		}
 	}
 
 	@Override

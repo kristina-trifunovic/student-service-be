@@ -20,6 +20,14 @@ public interface StudentRepository extends JpaRepository<StudentEntity, String> 
             @Param("city") String city,
             Pageable pageable);
 
+    @Query("SELECT s FROM StudentEntity s INNER JOIN s.exams ex WHERE " +
+            "ex.exam.professor.username = :professorUsername AND " +
+            "ex.exam.examPeriod.id = :examPeriodId AND " +
+            "ex.exam.subject.id = :subjectId")
+    List<StudentEntity> findAllExamsFromStudent(@Param("professorUsername") String professorUsername,
+                                                @Param("examPeriodId") Integer examPeriodId,
+                                                @Param("subjectId") Integer subjectId);
+
 //    @Query("SELECT s FROM StudentEntity s " +
 //            "WHERE s.firstName LIKE CONCAT(:firstName, '%') " +
 //            "AND s.lastName LIKE CONCAT(:lastName, '%') " +

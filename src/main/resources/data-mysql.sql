@@ -59,14 +59,14 @@ VALUES ('December', '2021-12-21', '2021-12-26', null),
        ('June 2', '2022-06-23', '2022-07-10', null),
        ('September', '2022-08-23', '2022-09-04', null);
 
-INSERT INTO `exam` (`exam_period`, `professor`, `subject`, `exam_date`, `grade`)
-VALUES ('2', 'kika', '1', '2022-01-27', NULL),
-       ('4', 'kika', '2', '2022-06-09', NULL),
-       ('2', 'marina', '3', '2022-01-29', NULL);
+INSERT INTO `exam` (`exam_period`, `professor`, `subject`, `exam_date`)
+VALUES ('2', 'kika', '1', '2022-01-27'),
+       ('4', 'kika', '2', '2022-06-09'),
+       ('2', 'marina', '3', '2022-01-29');
 
-INSERT INTO `student_takes_exams` (exam_period, professor, subject, student)
-VALUES ('2', 'kika', '1', 'nikolina'),
-       ('2', 'marina', '3', 'zora');
+INSERT INTO `student_takes_exam` (exam_exam_period, exam_professor, exam_subject, student_username, grade)
+VALUES ('2', 'kika', '1', 'nikolina', null),
+       ('2', 'marina', '3', 'zora', null);
 
 INSERT INTO `authorities` (authority, username)
 VALUES ('ROLE_PROFESSOR', 'kika'),

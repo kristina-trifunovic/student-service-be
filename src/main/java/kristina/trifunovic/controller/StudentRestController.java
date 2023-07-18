@@ -70,6 +70,15 @@ public class StudentRestController {
         }
     }
 
+    @GetMapping("page")
+    public ResponseEntity<Page<StudentEntity>> findPage(@RequestParam(defaultValue = "0") Integer pageNo,
+                                                        @RequestParam(defaultValue = "5") Integer pageSize,
+                                                        @RequestParam(defaultValue = "lastName") String sortBy,
+                                                        @RequestParam(defaultValue = "asc") String sortOrder) {
+        return new ResponseEntity<>(studentService.findPage(pageNo, pageSize, sortBy, sortOrder), new HttpHeaders(),
+                HttpStatus.OK);
+    }
+
     @GetMapping("filter")
     public ResponseEntity<Page<StudentEntity>> findFilteredPage(@RequestParam(defaultValue = "") String firstName,
                                                                 @RequestParam(defaultValue = "") String lastName,
@@ -81,6 +90,13 @@ public class StudentRestController {
                                                                 @RequestParam(defaultValue = "asc") String sortOrder) {
         return new ResponseEntity<>(studentService.findFilteredPage(firstName, lastName, email, city, pageNo, pageSize, sortBy, sortOrder), new HttpHeaders(),
                 HttpStatus.OK);
+    }
+
+    @GetMapping("exams/{professorUsername}/{examPeriodId}/{subjectId}")
+    public @ResponseBody ResponseEntity<Object> findAllExamsFromStudent(@PathVariable String professorUsername,
+                                                                        @PathVariable Integer examPeriodId,
+                                                                        @PathVariable Integer subjectId) {
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.findAllExamsFromStudent(professorUsername, examPeriodId, subjectId));
     }
 
 //    @GetMapping("filter")

@@ -59,6 +59,10 @@ public class StudentService implements Service<StudentEntity, String> {
         } else throw new UnknownEntityException("Student not found", studentToDelete);
     }
 
+    public List<StudentEntity> findAllExamsFromStudent(String professorUsername, Integer examPeriodId, Integer subjectId) {
+        return studentRepository.findAllExamsFromStudent(professorUsername, examPeriodId, subjectId);
+    }
+
     @Override
     public Optional<StudentEntity> findById(String username) {
         Optional<StudentEntity> studentFromDb = studentRepository.findById(username);

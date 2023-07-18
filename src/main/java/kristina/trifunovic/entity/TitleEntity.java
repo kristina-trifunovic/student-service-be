@@ -12,7 +12,7 @@ import java.util.Objects;
 public class TitleEntity implements kristina.trifunovic.entity.Entity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull(message = "Id is required")
+//    @NotNull(message = "Id is required")
     private Integer id;
     @Column
     @NotBlank(message = "Title is required")
